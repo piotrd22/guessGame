@@ -1,5 +1,4 @@
 import Head from "next/head";
-import styles from "@/styles/Home.module.css";
 import axios from "axios";
 
 export async function getServerSideProps() {
@@ -27,7 +26,7 @@ type Props = {
 
 export default function Home({ users }: Props) {
   const userComponent = users?.map((user: User) => (
-    <p key={user.ID}>{user.Name}</p>
+    <p className="text-3xl font-bold underline" key={user.ID}>{user.Name}</p>
   ));
 
   return (
@@ -38,7 +37,7 @@ export default function Home({ users }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
+      <main>
         <div>{userComponent}</div>
       </main>
     </>
