@@ -5,7 +5,7 @@ export async function getServerSideProps() {
   const res = await axios.get("http://localhost:8080/hall-of-fame");
   return {
     props: {
-      users: res.data.hallOfFame, //should be "ok"
+      users: res.data.hallOfFame,
     },
   };
 }
@@ -26,7 +26,9 @@ type Props = {
 
 export default function Home({ users }: Props) {
   const userComponent = users?.map((user: User) => (
-    <p className="text-3xl font-bold underline" key={user.ID}>{user.Name}</p>
+    <p className="text-3xl font-bold underline" key={user.ID}>
+      {user.Name}
+    </p>
   ));
 
   return (
