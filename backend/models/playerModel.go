@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 type User struct {
 	gorm.Model // gorm.Model add us ID, CreatedAt, UpdatedAt, DeletedAt
 	Name       string
-	Tries      uint `gorm:"default:0"`
+	Tries      int `gorm:"default:-1"`
 	NumToGuess int
 }
 

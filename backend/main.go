@@ -15,6 +15,8 @@ func main() {
 	r := gin.Default()
 
 	r.POST("/users", controllers.UserCreate)
+	r.GET("/hall-of-fame", controllers.GetHallOfFame)
+	r.POST("/check/:id", controllers.Check)
 
 	r.Run()
 }
