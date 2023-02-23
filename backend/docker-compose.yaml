@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  dev-db:
+    image: postgres:latest
+    ports:
+      - 8081:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: guess-game
+    networks:
+      - backend
+networks:
+  backend:
