@@ -34,7 +34,7 @@ func UserCreate(c *gin.Context) {
 
 func GetHallOfFame(c *gin.Context) {
 	var users []models.User
-	result := initializers.DB.Order("tries DESC").Limit(30).Find(&users)
+	result := initializers.DB.Where("is_guessed = ?", true).Order("tries DESC").Limit(30).Find(&users)
 
 	if result.Error != nil {
 		c.Status(400)
@@ -63,12 +63,8 @@ func Check(c *gin.Context) {
 		return
 	}
 
-	if user.Tries == -1 {
-		initializers.DB.First(&user, id).Update("tries", 0)
-	}
-
 	if user.NumToGuess == body.NumberToGuess {
-		initializers.DB.First(&user, id).Update("tries", user.Tries+1)
+		initializers.DB.First(&user, id).Updates(models.User{Tries: user.Tries + 1, IsGuessed: true})
 		var record models.User
 		initializers.DB.Order("tries DESC").Limit(1).Find(&record)
 
