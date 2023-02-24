@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
-import NavBar from "../components/Navbar";
+import Navbar from "../components/Navbar";
 
 interface MainLayoutProps {
   className?: string;
@@ -9,9 +9,13 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   className = "",
   children,
 }) => (
-  <div className="flex min-h-screen flex-col pb-4">
-    <NavBar />
-    <main className={className}>{children}</main>
+  <div className="container mx-auto p-3 min-h-screen">
+    <Navbar />
+    <main
+      className={className ? className : "container mx-auto flex flex-auto"}
+    >
+      {children}
+    </main>
   </div>
 );
 
