@@ -1,36 +1,8 @@
 import Head from "next/head";
-import axios from "axios";
+import MainLayout from "@/layouts/MainLayout";
+import Form from "@/components/Form";
 
-export async function getServerSideProps() {
-  const res = await axios.get("http://localhost:8080/hall-of-fame");
-  return {
-    props: {
-      users: res.data.hallOfFame,
-    },
-  };
-}
-
-interface User {
-  ID: number;
-  Name: string;
-  Tries: number;
-  NumToGuess: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string;
-}
-
-type Props = {
-  users: User[];
-};
-
-export default function Home({ users }: Props) {
-  const userComponent = users?.map((user: User) => (
-    <p className="text-3xl font-bold underline" key={user.ID}>
-      {user.Name}
-    </p>
-  ));
-
+export default function Home() {
   return (
     <>
       <Head>
@@ -39,9 +11,9 @@ export default function Home({ users }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div>{userComponent}</div>
-      </main>
+      <MainLayout>
+        <Form />
+      </MainLayout>
     </>
   );
 }
