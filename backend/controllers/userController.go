@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/piotrd22/guessGame/backend/initializers"
@@ -12,10 +13,16 @@ import (
 func UserCreate(c *gin.Context) {
 	// req.body
 	var body struct {
-		Name string
+		Name string `json:"name" binding:"required"`
 	}
 
-	c.Bind(&body)
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(400,
+			gin.H{
+				"error":   "VALIDATEERR-1",
+				"message": "Invalid inputs. Please check your inputs"})
+		return
+	}
 
 	random := rand.Intn(100) + 1
 
@@ -27,14 +34,42 @@ func UserCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"user": user,
-	})
+	c.JSON(200, user)
+}
+
+func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	var user models.User
+	result := initializers.DB.Unscoped().Delete(&user, id) // Unscoped delete user permamently, without it it would just add date to Deleted At
+
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
+
+	c.JSON(200, "User has been deleted")
+}
+
+func DeleteUsers(c *gin.Context) {
+
+	now := time.Now()
+	someTimeAgo := now.Add(-(20 * time.Minute))
+
+	var users []models.User
+	result := initializers.DB.Unscoped().Where("is_guessed = ? AND created_at <= ?", false, someTimeAgo).Delete(&users)
+
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
+
+	c.JSON(200, "Users has been deleted")
 }
 
 func GetHallOfFame(c *gin.Context) {
 	var users []models.User
-	result := initializers.DB.Where("is_guessed = ?", true).Order("tries DESC").Limit(30).Find(&users)
+	result := initializers.DB.Where("is_guessed = ?", true).Order("tries ASC").Limit(30).Find(&users)
 
 	if result.Error != nil {
 		c.Status(400)
@@ -50,15 +85,21 @@ func Check(c *gin.Context) {
 	id := c.Param("id")
 
 	var body struct {
-		NumberToGuess int
+		NumberToGuess int `json:"numbertoguess" binding:"required"`
 	}
 
-	c.Bind(&body)
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.AbortWithStatusJSON(400,
+			gin.H{
+				"error":   "VALIDATEERR-1",
+				"message": "Invalid inputs. Please check your inputs"})
+		return
+	}
 
 	var user models.User
 	result := initializers.DB.First(&user, id)
 
-	if result.Error != nil {
+	if result.Error != nil || result == nil {
 		c.Status(400)
 		return
 	}
@@ -66,9 +107,9 @@ func Check(c *gin.Context) {
 	if user.NumToGuess == body.NumberToGuess {
 		initializers.DB.First(&user, id).Updates(models.User{Tries: user.Tries + 1, IsGuessed: true})
 		var record models.User
-		initializers.DB.Order("tries DESC").Limit(1).Find(&record)
+		initializers.DB.Order("tries ASC").Limit(1).Find(&record)
 
-		if user.Tries < record.Tries {
+		if user.Tries < record.Tries || (record.Tries == user.Tries && record.ID == user.ID) {
 			answer := fmt.Sprintf("You won in %v tries and break global record!", user.Tries)
 			c.JSON(200, gin.H{
 				"answer": answer,
@@ -89,12 +130,12 @@ func Check(c *gin.Context) {
 
 	} else if user.NumToGuess < body.NumberToGuess {
 		initializers.DB.First(&user, id).Update("tries", user.Tries+1)
-		c.JSON(200, gin.H{
+		c.JSON(201, gin.H{
 			"message": "Given number is too big",
 		})
 	} else {
 		initializers.DB.First(&user, id).Update("tries", user.Tries+1)
-		c.JSON(200, gin.H{
+		c.JSON(201, gin.H{
 			"message": "Given number is too small",
 		})
 	}
