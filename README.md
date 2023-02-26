@@ -1,3 +1,3 @@
 # guessGame
 
-In this project, I'm going to create a simple number guessing game to learn the basics of the Gin framework and Next.js.
+In this project, I created a simple number guessing game to learn the basics of the Gin and Next.js framework.
