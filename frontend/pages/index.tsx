@@ -1,5 +1,6 @@
 import Head from "next/head";
 import MainLayout from "@/layouts/MainLayout";
+import Form from "@/components/Form";
 
 export default function Home() {
   return (
@@ -10,7 +11,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MainLayout></MainLayout>
+      <MainLayout>
+        <Form />
+      </MainLayout>
     </>
   );
 }
