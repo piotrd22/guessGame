@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { User } from "@/types/User";
+import { toast } from "react-toastify";
 
 type Form = {
   name: string;
@@ -10,6 +10,19 @@ type Form = {
 
 function Form() {
   const router = useRouter();
+
+  const notifyError = (data: string) => {
+    toast.error(data, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
 
   const {
     register,
@@ -37,7 +50,7 @@ function Form() {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 400) {
-            alert("Login failed!");
+            notifyError(error.response.data.message);
           }
         } else alert(error);
       });
@@ -57,7 +70,7 @@ function Form() {
           {...register("name", { required: true })}
         />
         {errors.name && <div className="my-2">This field is required!</div>}
-        <button className="btn btn-primary my-5 mx-auto flex">LOGIN</button>
+        <button className="btn btn-primary my-5 mx-auto flex">Start</button>
       </form>
     </div>
   );
